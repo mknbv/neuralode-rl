@@ -7,6 +7,12 @@ from .trajectory_transforms import (
     NormalizeAdvantages,
     Take,
 )
-from .models import NatureDQNBase, NatureDQNModel
+from .models import (
+    NatureDQNBase,
+    NatureDQNModel,
+    MLPBase,
+    MLPModel,
+    MujocoModel
+)
 from .policies import Policy, ActorCriticPolicy
 from .ppo import PPO

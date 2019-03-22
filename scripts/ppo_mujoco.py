@@ -32,75 +32,6 @@ def get_parser(parser=None):
   return parser
 
 
-class Path(tf.keras.Model):
-  def __init__(self,
-               output_units,
-               odeint=False,
-               time=(0., 1.),
-               rtol=1e-3,
-               atol=1e-3,
-               **kwargs):
-    super().__init__()
-    self.odeint = odeint
-    self.time = tf.convert_to_tensor(time)
-    self.rtol = rtol
-    self.atol = atol
-    self.state = tf.keras.layers.Dense(
-        units=64,
-        activation=tf.nn.tanh,
-        kernel_initializer=tf.initializers.orthogonal(sqrt(2)),
-        bias_initializer=tf.initializers.zeros())
-    self.dynamics = tf.keras.layers.Dense(
-        units=64,
-        activation=tf.nn.tanh,
-        kernel_initializer=tf.initializers.orthogonal(sqrt(2)),
-        bias_initializer=tf.initializers.zeros())
-    self.outputs = tf.keras.layers.Dense(
-        units=output_units,
-        kernel_initializer=tf.initializers.orthogonal(1),
-        bias_initializer=tf.initializers.zeros())
-
-  def call(self, inputs): # pylint: disable=arguments-differ
-    state = self.state(inputs)
-    if self.odeint:
-      def dynamics(state, t):
-        t = tf.convert_to_tensor([[tf.cast(t, tf.float32)]])
-        t = tf.tile(t, [state.shape[0], 1])
-        return self.dynamics(tf.concat([state, t], -1))
-
-      state = neuralode.odeint(dynamics, state, self.time,
-                               rtol=self.rtol, atol=self.atol)[-1]
-    else:
-      state = self.dynamics(state)
-    return self.outputs(state)
-
-
-
-class MLPModel(tf.keras.Model):
-  def __init__(self,
-               input_shape,
-               action_shape,
-               odeint=(False, False),
-               time=(0., 1.),
-               rtol=1e-3,
-               atol=1e-3):
-    super().__init__()
-    self._input_shape = input_shape
-    self.logits = Path(np.prod(action_shape), odeint=odeint[0], time=time,
-                       rtol=rtol, atol=atol)
-    self.values = Path(1, odeint=odeint[1], time=time, rtol=rtol, atol=atol)
-    self.logstd = tf.Variable(np.zeros(np.prod(action_shape)), dtype=tf.float32,
-                              trainable=True, name="logstd")
-
-  @property
-  def input(self):
-    return tf.keras.layers.Input(self._input_shape)
-
-  def call(self, inputs): # pylint: disable=arguments-differ
-    inputs = tf.cast(inputs, tf.float32)
-    return self.logits(inputs), tf.exp(self.logstd), self.values(inputs)
-
-
 def main():
   args = get_parser().parse_args()
   def make_env(seed=0):
@@ -112,10 +43,8 @@ def main():
   env = rl.env.Normalize(rl.env.Summaries(
       rl.env.ParallelEnvBatch(make_funcs), prefix=args.env_id))
   policy = rl.ActorCriticPolicy(
-      MLPModel(env.observation_space.shape,
-               env.action_space.shape,
-               odeint=(args.policy_odeint, args.value_odeint),
-               rtol=args.tol, atol=args.tol),
+      rl.MujocoModel(env.observation_space.shape,
+                     np.prod(env.action_space.shape), 1),
       distribution=tfp.distributions.MultivariateNormalDiag)
   runner = rl.make_ppo_runner(env, policy,
                               num_runner_steps=args.num_runner_steps,
