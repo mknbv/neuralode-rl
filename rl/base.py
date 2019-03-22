@@ -54,8 +54,9 @@ class BaseAlgorithm(ABC):
     with tf.GradientTape() as tape:
       loss = self.loss(data)
     gradients = self.preprocess_gradients(
-        tape.gradient(loss, self.model.variables))
-    self.optimizer.apply_gradients(zip(gradients, self.model.variables))
+        tape.gradient(loss, self.model.trainable_variables))
+    self.optimizer.apply_gradients(zip(gradients,
+                                       self.model.trainable_variables))
     if getattr(self.step_var, "auto_update", True):
       self.step_var.assign_add(1)
     return loss
