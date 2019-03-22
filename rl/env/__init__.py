@@ -14,7 +14,6 @@ from .atari_wrappers import (
     SkipFrames,
     ClipReward,
     Summaries,
-    AccessAttribute,
     nature_dqn_env,
 )
 from .mujoco_wrappers import (

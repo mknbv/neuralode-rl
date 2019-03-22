@@ -6,7 +6,7 @@ import numpy as np
 from .base import BaseRunner
 from .env.env_batch import SpaceBatch
 from .trajectory_transforms import (
-    GAE, MergeTimeBatch, NormalizeAdvantages, AdvantagesToActionVector)
+    GAE, MergeTimeBatch, NormalizeAdvantages)
 
 
 def nenvs(env):

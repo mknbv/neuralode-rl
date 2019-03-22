@@ -91,15 +91,6 @@ class NormalizeAdvantages:
                                 / (advantages.std() + self.epsilon))
 
 
-class AdvantagesToActionVector:
-  """ Tiles advantages across the last dimension."""
-  def __call__(self, trajectory):
-    advantages = trajectory["advantages"]
-    reps = [1] * trajectory["actions"].ndim
-    reps[-1] = trajectory["actions"].shape[-1]
-    trajectory["advantages"] = np.tile(advantages[..., None], reps)
-
-
 class Take:
   """ Keepds data only from specified indices. """
   def __init__(self, indices, axis=1):

@@ -265,26 +265,6 @@ class Summaries(gym.Wrapper):
     return self.env.reset(**kwargs)
 
 
-class AccessAttribute(gym.Wrapper):
-  def __init__(self, env, attr):
-    super().__init__(env)
-    self.attr = attr
-
-  def __getattr__(self, attr):
-    if attr != self.attr:
-      super().__getattr__(attr)
-    env = self.env
-    while not hasattr(env, attr):
-      env = env.env
-    return getattr(env, attr)
-
-  def step(self, action):
-    return self.env.step(action)
-
-  def reset(self, **kwargs):
-    return self.env.reset(**kwargs)
-
-
 def nature_dqn_env(env_id, batch_size=None, seed=None,
                    summaries=True, clip_reward=True):
   """ Wraps env as in Nature DQN paper. """
@@ -308,7 +288,6 @@ def nature_dqn_env(env_id, batch_size=None, seed=None,
       env = Summaries(env, prefix=env_id)
     if clip_reward:
       env = ClipReward(env)
-    env = AccessAttribute(env, "nenvs")
     return env
 
   env = gym.make(env_id)
