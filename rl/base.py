@@ -15,7 +15,6 @@ class BaseRunner(ABC):
                               tf.train.get_or_create_global_step())
     self.step_var = step_var
 
-  """ Gives access to task-specific data. """
   @abstractmethod
   def get_next(self):
     """ Returns next data object """
