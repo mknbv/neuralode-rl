@@ -1,7 +1,7 @@
+""" Neural ordinary differential equations module. """
+from functools import partial
 from types import FunctionType
 import tensorflow as tf
-
-tfe = tf.contrib.eager
 
 
 tf.register_tensor_conversion_function(
@@ -11,6 +11,7 @@ tf.register_tensor_conversion_function(
 
 
 def _flatten(tensors):
+  """ Flattens given tensor or a collection of tensors. """
   if not isinstance(tensors, (list, tuple)): # given single tensor
     return tf.reshape(tensors, (-1,))
   return (tf.concat([tf.reshape(t, (-1,)) for t in tensors], 0)
@@ -18,12 +19,15 @@ def _flatten(tensors):
 
 
 def _unflatten(tensor, shapes):
+  """ Splits given tensor and reshapes results using given shapes. """
   split = tf.split(tensor, [tf.reduce_prod(s) for s in shapes])
   return [tf.reshape(t, s) for t, s in zip(split, shapes)]
 
 
 def odeint_grad(grad_output, func, yt, t, variables=None,
                 rtol=1e-6, atol=1e-12):
+  """ Adjoint method for computing gradients through odeint solvers. """
+  # pylint: disable=too-many-arguments, invalid-name, too-many-locals
   yshape = yt.shape[1:]
   ysize = tf.reduce_prod(yshape)
 
@@ -46,6 +50,7 @@ def odeint_grad(grad_output, func, yt, t, variables=None,
 
     # use negative values to integrate from t[i] to t[i - 1] using
     # tf.contrib.integrate.odeint.
+    # pylint: disable=invalid-unary-operand-type
     return -tf.concat([_flatten(fval), vjp_y, vjp_t[None], vjp_variables], 0)
 
   y_grad = grad_output[-1]
@@ -82,6 +87,8 @@ def odeint_grad(grad_output, func, yt, t, variables=None,
 
 @tf.custom_gradient
 def odeint(func, y0, t, rtol=1e-6, atol=1e-12):
+  """ Wrapper for tf.contrib.integrate.odeint that implements backprop. """
+  # pylint: disable=invalid-name
   yt = tf.contrib.integrate.odeint(func, y0, t, rtol=rtol, atol=atol)
 
   def grad_fn(grad_output, variables=None):
