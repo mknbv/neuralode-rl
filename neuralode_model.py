@@ -2,7 +2,7 @@
 from functools import partial
 from math import sqrt
 import tensorflow as tf
-from neuralode import odeint
+from odeint import odeint
 
 
 class MLP(tf.keras.Sequential):
