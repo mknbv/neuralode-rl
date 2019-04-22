@@ -56,19 +56,20 @@ class ODEMLP(tf.keras.Model):
 
 class ODEMujocoModel(tf.keras.Model):
   """ Mujoco model with ODE layer(s). """
-  def __init__(self, input_shape, nactions, ode_policy=True, ode_value=False,
-               rtol=1e-3, atol=1e-3):
+  def __init__(self, input_shape, action_dim,
+               ode_policy=True, ode_value=False, rtol=1e-3, atol=1e-3):
     super().__init__()
     self.input_layer = tf.keras.layers.Input(input_shape)
     if ode_policy:
-      self.policy = ODEMLP(nactions, rtol=rtol, atol=atol)
+      self.policy = ODEMLP(action_dim, rtol=rtol, atol=atol)
     else:
-      self.policy = MLP(nactions)
+      self.policy = MLP(action_dim)
     if ode_value:
       self.values = ODEMLP(1, rtol=rtol, atol=atol)
     else:
       self.values = MLP(1)
-    self.logstd = tf.Variable(tf.zeros(nactions), trainable=True, name="logstd")
+    self.logstd = tf.Variable(tf.zeros(action_dim), trainable=True,
+                              name="logstd")
 
   @property
   def input(self):
