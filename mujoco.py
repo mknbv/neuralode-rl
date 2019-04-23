@@ -15,7 +15,7 @@ def get_parser(base_parser):
 
 def main():
   parser = get_parser(derl.get_parser(defaults=derl.PPOLearner.mujoco_defaults))
-  args = parser.parse_args()
+  args = derl.log_args(parser.parse_args())
 
   env = derl.env.make(args.env_id)
   env.seed(args.seed)
