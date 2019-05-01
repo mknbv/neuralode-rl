@@ -1,5 +1,4 @@
 """ Neural ordinary differential equations module. """
-from functools import partial
 from types import FunctionType
 import tensorflow as tf
 
