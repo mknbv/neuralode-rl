@@ -23,6 +23,20 @@ class MLP(tf.keras.Sequential):
     ])
 
 
+class RoboschoolMLP(tf.keras.Sequential):
+  """ Roboschool MLP. """
+  def __init__(self, output_units, activation=tf.nn.relu):
+    def init(output=False):
+      scale = 1 if output else sqrt(2)
+      return dict(kernel_initializer=tf.initializers.orthogonal(scale),
+                  bias_initializer=tf.initializers.zeros())
+    super().__init__([
+        tf.keras.layers.Dense(256, activation=activation, **init()),
+        tf.keras.layers.Dense(128, activation=activation, **init()),
+        tf.keras.layers.Dense(output_units, **init(True))
+    ])
+
+
 class ODEModel(tf.keras.Model):
   """ ODE model that wraps state, dynamics and output models. """
   def __init__(self, state, dynamics, outputs,
@@ -76,13 +90,19 @@ class ODEMLP(ODEModel):
 
 class ContinuousActorCriticModel(tf.keras.Model):
   """ Adds variance variable to policy and value models to create new model. """
-  def __init__(self, input_shape, action_dim, policy, value):
+  def __init__(self, input_shape, action_dim, policy, value, logstd=None):
     super().__init__()
     self.input_tensor = tf.keras.layers.Input(input_shape)
     self.policy = policy
     self.value = value
-    self.logstd = tf.Variable(tf.zeros(action_dim), trainable=True,
-                              name="logstd")
+    if logstd is not None:
+      if tf.shape(logstd) != [action_dim]:
+        raise ValueError(f"logstd has wrong shape {tf.shape(logstd)}, ",
+                         f"expected 1-d tensor of size action_dim={action_dim}")
+      self.logstd = logstd
+    else:
+      self.logstd = tf.Variable(tf.zeros(action_dim), trainable=True,
+                                name="logstd")
 
   @property
   def input(self):
