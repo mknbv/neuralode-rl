@@ -4,17 +4,23 @@ import os
 import re
 
 
-def get_default_envs():
+def get_mujoco_envs():
   """ Returns list of default envs. """
-  with open("mujoco-envs.txt") as envsfile:
-    envs = list(map(str.rstrip, envsfile))
-  return envs
+  return [
+      "HalfCheetah-v3",
+      "Hopper-v3",
+      "InvertedDoublePendulum-v2",
+      "InvertedPendulum-v2",
+      "Reacher-v2",
+      "Swimmer-v3",
+      "Walker2d-v3",
+  ]
 
 
 def get_parser():
   """ Returns parser. """
   parser = argparse.ArgumentParser()
-  parser.add_argument("--env-ids", nargs='+', default=get_default_envs())
+  parser.add_argument("--env-ids", nargs='+', default=get_mujoco_envs())
   parser.add_argument("--logdir-prefix", required=True)
   parser.add_argument("--seed", nargs='+', type=int,
                       default=[0, 123, 250, 500, 1024])
