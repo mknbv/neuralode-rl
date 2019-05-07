@@ -58,7 +58,7 @@ class ODEModel(tf.keras.Model):
 
     state = self.state(inputs)
     hidden = self.odeint(dynamics, state, self.time)[-1]
-    out = self.output(hidden)
+    out = self.outputs(hidden)
     return out
 
 
