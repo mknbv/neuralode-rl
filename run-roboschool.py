@@ -59,7 +59,7 @@ def get_args():
 def make_env(env_id, nenvs, seed):
   """ Creates env instance. """
   env = derl.env.make(env_id, nenvs, seed)
-  env = derl.env.Summaries(env, prefix=env_id)
+  env = derl.env.Summarize.reward_summarizer(env, prefix=env_id)
   env = derl.env.Normalize(env)
   return env
 
