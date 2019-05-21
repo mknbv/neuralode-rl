@@ -1,8 +1,9 @@
 """ Script to run muojco experiment on a single env. """
+# pylint: disable=invalid-name
 from functools import partial
 import tensorflow as tf
 import derl
-from neuralode_model import ContinuousActorCriticModel, ODEMLP, MLP
+from models import ContinuousActorCriticModel, ODEMLP, MLP
 tf.enable_eager_execution()
 
 

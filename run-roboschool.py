@@ -4,8 +4,8 @@ from functools import partial
 import roboschool # pylint: disable=unused-import
 import tensorflow as tf
 import derl
-from neuralode_model import (ContinuousActorCriticModel,
-                             ODEMLP, RoboschoolMLP)
+from models import (ContinuousActorCriticModel,
+                    ODEMLP, RoboschoolMLP)
 tf.enable_eager_execution()
 
 
