@@ -1,0 +1,3 @@
+[submodule "derl"]
+	path = derl
+	url = https://github.com/MichaelKonobeev/derl.git
