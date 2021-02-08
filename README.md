@@ -20,6 +20,11 @@ pip install -r requirements.txt
 You will need to install environment dependencies for
 [MuJoCo](https://github.com/openai/mujoco-py) and/or
 [Roboschool](https://github.com/openai/roboschool) envs separately.
+For roboschool, use version 1.0.48 which is the latest version compatible
+with gym:
+```{bash}
+pip install roboschool==1.0.48
+```
 
 To run baseline MLP-model experiment on a single env:
 ```{bash}
