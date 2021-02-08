@@ -11,14 +11,15 @@ environments with policies training using PPO.
 Firstly, install TensorFlow version 1.13.1. Note that GPU version
 may not be necessary as the models are quite simple and could run
 fast on a powerful CPU. Cloning the repo and installing
-deep RL derl package:
+the requirements:
 ```{bash}
 git clone --recursive https://github.com/MichaelKonobeev/neuralode-rl.git
 cd neuralode-rl
-pip install -e derl
+pip install -r requirements.txt
 ```
-You will need to install environment dependencies for [MuJoCo](https://github.com/openai/mujoco-py) and/or [Roboschool](https://github.com/openai/roboschool)
-envs separately.
+You will need to install environment dependencies for
+[MuJoCo](https://github.com/openai/mujoco-py) and/or
+[Roboschool](https://github.com/openai/roboschool) envs separately.
 
 To run baseline MLP-model experiment on a single env:
 ```{bash}
